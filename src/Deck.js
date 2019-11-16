@@ -41,13 +41,12 @@ class Deck extends Component {
   };
 
   // pure
-  getCardStyle = (pos, input, output) => {
+  getCardStyle = (pos, input, output, animation) => {
     const rotate = pos.x.interpolate({
       inputRange: [...input],
       outputRange: [...output]
     });
-
-    return { ...pos.getLayout(), transform: [{ rotate }] };
+    return { ...pos.getLayout(), [animation]: [{ rotate }] };
   };
 
   renderCards() {
@@ -59,7 +58,8 @@ class Deck extends Component {
             style={this.getCardStyle(
               this.state.position,
               [-SCREEN_WIDTH * 1.7, 0, SCREEN_WIDTH * 1.7],
-              ["-120deg", "0deg", "120deg"]
+              ["-120deg", "0deg", "120deg"],
+              "transform"
             )}
             {...this.state.panResponder.panHandlers}
           >
