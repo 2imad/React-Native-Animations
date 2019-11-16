@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { View, Animated, PanResponder } from "react-native";
+import { View, Animated, PanResponder, Dimensions } from "react-native";
+
+const SCREEN_WIDTH = Dimensions.get("window").width;
 
 class Deck extends Component {
   constructor(props) {
@@ -12,15 +14,24 @@ class Deck extends Component {
         const { dx, dy } = gesture;
         position.setValue({ x: dx, y: dy });
       },
-      onPanResponderRelease: () => {}
+      onPanResponderRelease: () => {
+        this.resetPosition();
+      }
     });
     this.state = { panResponder, position };
   }
 
+  resetPosition = () => {
+    Animated.spring(this.state.position, {
+      toValue: { x: 0, y: 0 }
+    }).start();
+  };
+
+  // unpure
   getCardStyle = () => {
     const { position } = this.state;
     const rotate = position.x.interpolate({
-      inputRange: [-500, 0, 500],
+      inputRange: [-SCREEN_WIDTH * 1.7, 0, SCREEN_WIDTH * 1.7],
       outputRange: ["-120deg", "0deg", "120deg"]
     });
     return {
@@ -29,13 +40,27 @@ class Deck extends Component {
     };
   };
 
+  // pure
+  getCardStyle = (pos, input, output) => {
+    const rotate = pos.x.interpolate({
+      inputRange: [...input],
+      outputRange: [...output]
+    });
+
+    return { ...pos.getLayout(), transform: [{ rotate }] };
+  };
+
   renderCards() {
     return this.props.data.map((item, index) => {
       if (index === 0) {
         return (
           <Animated.View
             key={item.id}
-            style={this.getCardStyle()}
+            style={this.getCardStyle(
+              this.state.position,
+              [-SCREEN_WIDTH * 1.7, 0, SCREEN_WIDTH * 1.7],
+              ["-120deg", "0deg", "120deg"]
+            )}
             {...this.state.panResponder.panHandlers}
           >
             {this.props.renderCard(item)}
