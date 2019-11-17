@@ -51,7 +51,11 @@ class Deck extends Component {
     this.state = { panResponder, position, currentIndex: 0 };
   }
 
-  componentWillReceiveProps() {}
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.data !== this.props.data) {
+      this.setState({ currentIndex: 0 });
+    }
+  }
   //------------------------- Animation ---------------------------//
   // unpure code
 
