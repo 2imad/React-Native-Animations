@@ -1,5 +1,14 @@
 import React, { Component } from "react";
-import { View, Animated, PanResponder, Dimensions } from "react-native";
+import {
+  View,
+  Animated,
+  PanResponder,
+  Dimensions,
+  StyleSheet,
+  LayoutAnimation,
+  UIManager,
+  Platform
+} from "react-native";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SWIPE_TRESHOLD = 0.25 * SCREEN_WIDTH;
@@ -42,6 +51,7 @@ class Deck extends Component {
     this.state = { panResponder, position, currentIndex: 0 };
   }
 
+  componentWillReceiveProps() {}
   //------------------------- Animation ---------------------------//
   // unpure code
 
@@ -73,12 +83,14 @@ class Deck extends Component {
     });
     return { ...pos.getLayout(), [animation]: [{ rotate }] };
   };
+
   forceSwipe = (position, destination, duration) => {
     Animated.timing(position, {
       toValue: { x: destination, y: 0 },
       duration
     }).start(() => this.onSwipeComplete(destination));
   };
+
   resetPosition = position => {
     Animated.spring(position, {
       toValue: { x: 0, y: 0 }
@@ -87,32 +99,72 @@ class Deck extends Component {
   // ---------------------------------------------------------------- //
 
   renderCards() {
-    return this.props.data.map((item, index) => {
-      if (index < this.state.currentIndex) {
-        return null;
-      }
-      if (index === this.state.currentIndex) {
+    if (this.state.currentIndex >= this.props.data.length) {
+      return <View>{this.props.renderNoMoreCards()}</View>;
+    }
+    return this.props.data
+      .map((item, index) => {
+        if (index < this.state.currentIndex) {
+          return null;
+        }
+        if (index === this.state.currentIndex) {
+          return (
+            <Animated.View
+              key={item.id}
+              style={[
+                this.getCardStyle(
+                  this.state.position,
+                  [-SCREEN_WIDTH * 1.7, 0, SCREEN_WIDTH * 1.7],
+                  [...Object.values(DEGS)],
+                  TRANSFORM
+                ),
+                styles.deckStyle,
+                {
+                  ...zIndexWorkaround(100)
+                }
+              ]}
+              {...this.state.panResponder.panHandlers}
+            >
+              {this.props.renderCard(item)}
+            </Animated.View>
+          );
+        }
         return (
           <Animated.View
             key={item.id}
-            style={this.getCardStyle(
-              this.state.position,
-              [-SCREEN_WIDTH * 1.7, 0, SCREEN_WIDTH * 1.7],
-              [...Object.values(DEGS)],
-              TRANSFORM
-            )}
-            {...this.state.panResponder.panHandlers}
+            style={[
+              styles.deckStyle,
+              { top: 10 * (index - this.state.currentIndex) }
+            ]}
           >
             {this.props.renderCard(item)}
           </Animated.View>
         );
-      }
-      return this.props.renderCard(item);
-    });
+      })
+      .reverse();
   }
+
+  componentWillUpdate() {
+    UIManager.setLayoutAnimationEnabledExperimental &&
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    LayoutAnimation.spring();
+  }
+
   render() {
-    return <View>{this.renderCards()}</View>;
+    return <View style={styles.deckStyle}>{this.renderCards()}</View>;
   }
 }
 
+zIndexWorkaround = val => {
+  return Platform.select({
+    ios: { zIndex: val },
+    android: { elevation: val }
+  });
+};
+const styles = StyleSheet.create({
+  deckStyle: {
+    position: "absolute",
+    width: SCREEN_WIDTH
+  }
+});
 export default Deck;

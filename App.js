@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import Deck from "./src/Deck";
 import { Card, Button } from "react-native-elements";
 
@@ -49,12 +49,27 @@ const DATA = [
 export default class App extends Component {
   renderCard = item => {
     return (
-      <Card key={item.id} title={item.title} image={{ uri: item.uri }}>
-        <Text> Customizable Text </Text>
+      <View>
+        <Card key={item.id} title={item.title} image={{ uri: item.uri }}>
+          <Text> Customizable Text {item.id} </Text>
+          <Button
+            icon={{ name: "code" }}
+            backgroundColor="#03A9F4"
+            title="View Now"
+          />
+        </Card>
+      </View>
+    );
+  };
+
+  renderNoMoreCards = () => {
+    return (
+      <Card title="No Data to show">
+        <Text> There are no more members to show </Text>
         <Button
           icon={{ name: "code" }}
           backgroundColor="#03A9F4"
-          title="View Now"
+          title="Try later"
         />
       </Card>
     );
@@ -62,7 +77,11 @@ export default class App extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Deck renderCard={this.renderCard} data={DATA} />
+        <Deck
+          renderNoMoreCards={this.renderNoMoreCards}
+          renderCard={this.renderCard}
+          data={DATA}
+        />
       </View>
     );
   }
@@ -70,6 +89,7 @@ export default class App extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#A8F1D1"
+    backgroundColor: "#A8F1D1",
+    flex: 1
   }
 });
