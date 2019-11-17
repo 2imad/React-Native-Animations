@@ -3,8 +3,19 @@ import { View, Animated, PanResponder, Dimensions } from "react-native";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SWIPE_TRESHOLD = 0.25 * SCREEN_WIDTH;
+const SWIPE_OUT_DURATION = 250;
+const DEGS = {
+  MIN: "-120deg",
+  N: "0deg",
+  MAX: "120deg"
+};
+const TRANSFORM = "transform";
 
 class Deck extends Component {
+  static defaultProps = {
+    onSwipeLeft: () => {},
+    onSwipeRight: () => {}
+  };
   constructor(props) {
     super(props);
 
@@ -17,31 +28,28 @@ class Deck extends Component {
         position.setValue({ x: dx, y: dy });
       },
       onPanResponderRelease: (event, gesture) => {
+        const { position } = this.state;
         const { dx } = gesture;
         if (dx > SWIPE_TRESHOLD) {
-          console.log("Swipped Right");
+          this.forceSwipe(position, SCREEN_WIDTH, SWIPE_OUT_DURATION);
         } else if (dx < -SWIPE_TRESHOLD) {
-          console.log("Swipped Left");
+          this.forceSwipe(position, -SCREEN_WIDTH, SWIPE_OUT_DURATION);
         } else {
-          this.resetPosition();
+          this.resetPosition(position);
         }
       }
     });
-    this.state = { panResponder, position };
+    this.state = { panResponder, position, currentIndex: 0 };
   }
 
-  resetPosition = () => {
-    Animated.spring(this.state.position, {
-      toValue: { x: 0, y: 0 }
-    }).start();
-  };
+  //------------------------- Animation ---------------------------//
+  // unpure code
 
-  // unpure
   getCardStyle = () => {
     const { position } = this.state;
     const rotate = position.x.interpolate({
       inputRange: [-SCREEN_WIDTH * 1.7, 0, SCREEN_WIDTH * 1.7],
-      outputRange: ["-120deg", "0deg", "120deg"]
+      outputRange: [...Object.values(DEGS)]
     });
     return {
       ...position.getLayout(),
@@ -49,7 +57,15 @@ class Deck extends Component {
     };
   };
 
-  // pure
+  onSwipeComplete = destination => {
+    const { onSwipeLeft, onSwipeRight, data } = this.props;
+    const item = data[this.state.currentIndex];
+    Math.sign(destination) ? onSwipeRight(item) : onSwipeLeft(item);
+    this.state.position.setValue({ x: 0, y: 0 });
+    this.setState({ currentIndex: this.state.currentIndex + 1 });
+  };
+
+  // pure code
   getCardStyle = (pos, input, output, animation) => {
     const rotate = pos.x.interpolate({
       inputRange: [...input],
@@ -57,18 +73,33 @@ class Deck extends Component {
     });
     return { ...pos.getLayout(), [animation]: [{ rotate }] };
   };
+  forceSwipe = (position, destination, duration) => {
+    Animated.timing(position, {
+      toValue: { x: destination, y: 0 },
+      duration
+    }).start(() => this.onSwipeComplete(destination));
+  };
+  resetPosition = position => {
+    Animated.spring(position, {
+      toValue: { x: 0, y: 0 }
+    }).start();
+  };
+  // ---------------------------------------------------------------- //
 
   renderCards() {
     return this.props.data.map((item, index) => {
-      if (index === 0) {
+      if (index < this.state.currentIndex) {
+        return null;
+      }
+      if (index === this.state.currentIndex) {
         return (
           <Animated.View
             key={item.id}
             style={this.getCardStyle(
               this.state.position,
               [-SCREEN_WIDTH * 1.7, 0, SCREEN_WIDTH * 1.7],
-              ["-120deg", "0deg", "120deg"],
-              "transform"
+              [...Object.values(DEGS)],
+              TRANSFORM
             )}
             {...this.state.panResponder.panHandlers}
           >
