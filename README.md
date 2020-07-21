@@ -1,4 +1,6 @@
-## Deck swipe animation with React Nativ.
+<body style="font-family:Montserrat;">
+
+## Deck swipe animation with React Native.
 
 ---
 
@@ -13,9 +15,10 @@ git clone git@github.com:2imad/React-Native-Swipe-Animation.git
 cd git@github.com:2imad/React-Native-Swipe-Animation.git
 npm install
 
-
 ```
 
 ### `npm start`
 
 Starts Expo dev server
+
+</body>
