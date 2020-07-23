@@ -21,4 +21,4 @@ npm install
 
 Starts Expo dev server
 
-![](swipe.gif)
+<img src="swipe.gif" width="200" height="400" />
