@@ -19,6 +19,12 @@ npm install
 
 ### `npm start`
 
+**requires Expo CLI**
+
 Starts Expo dev server
 
-<img src="swipe.gif" width="200" height="400" />
+### `Demo`
+
+<div align="center">
+  <img src="swipe.gif" width="200" height="400" />
+<div>
