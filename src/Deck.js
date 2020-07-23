@@ -7,23 +7,24 @@ import {
   StyleSheet,
   LayoutAnimation,
   UIManager,
-  Platform
+  Platform,
 } from "react-native";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_HEIGHT = Dimensions.get("window").height;
 const SWIPE_TRESHOLD = 0.25 * SCREEN_WIDTH;
 const SWIPE_OUT_DURATION = 250;
 const DEGS = {
   MIN: "-120deg",
   N: "0deg",
-  MAX: "120deg"
+  MAX: "120deg",
 };
 const TRANSFORM = "transform";
 
 class Deck extends Component {
   static defaultProps = {
     onSwipeLeft: () => {},
-    onSwipeRight: () => {}
+    onSwipeRight: () => {},
   };
   constructor(props) {
     super(props);
@@ -36,7 +37,7 @@ class Deck extends Component {
         const { dx, dy } = gesture;
         position.setValue({ x: dx, y: dy });
       },
-      onPanResponderRelease: (event, gesture) => {
+      onPanResponderRelease: (_, gesture) => {
         const { position } = this.state;
         const { dx } = gesture;
         if (dx > SWIPE_TRESHOLD) {
@@ -46,7 +47,7 @@ class Deck extends Component {
         } else {
           this.resetPosition(position);
         }
-      }
+      },
     });
     this.state = { panResponder, position, currentIndex: 0 };
   }
@@ -59,19 +60,23 @@ class Deck extends Component {
   //------------------------- Animation ---------------------------//
   // unpure code
 
+  resetCards = () => {
+    this.setState({ currentIndex: 0 });
+  };
+
   getCardStyle = () => {
     const { position } = this.state;
     const rotate = position.x.interpolate({
       inputRange: [-SCREEN_WIDTH * 1.7, 0, SCREEN_WIDTH * 1.7],
-      outputRange: [...Object.values(DEGS)]
+      outputRange: [...Object.values(DEGS)],
     });
     return {
       ...position.getLayout(),
-      transform: [{ rotate }]
+      transform: [{ rotate }],
     };
   };
 
-  onSwipeComplete = destination => {
+  onSwipeComplete = (destination) => {
     const { onSwipeLeft, onSwipeRight, data } = this.props;
     const item = data[this.state.currentIndex];
     Math.sign(destination) ? onSwipeRight(item) : onSwipeLeft(item);
@@ -83,7 +88,7 @@ class Deck extends Component {
   getCardStyle = (pos, input, output, animation) => {
     const rotate = pos.x.interpolate({
       inputRange: [...input],
-      outputRange: [...output]
+      outputRange: [...output],
     });
     return { ...pos.getLayout(), [animation]: [{ rotate }] };
   };
@@ -91,20 +96,20 @@ class Deck extends Component {
   forceSwipe = (position, destination, duration) => {
     Animated.timing(position, {
       toValue: { x: destination, y: 0 },
-      duration
+      duration,
     }).start(() => this.onSwipeComplete(destination));
   };
 
-  resetPosition = position => {
+  resetPosition = (position) => {
     Animated.spring(position, {
-      toValue: { x: 0, y: 0 }
+      toValue: { x: 0, y: 0 },
     }).start();
   };
   // ---------------------------------------------------------------- //
 
   renderCards() {
     if (this.state.currentIndex >= this.props.data.length) {
-      return <View>{this.props.renderNoMoreCards()}</View>;
+      return <View>{this.props.renderCard(null)}</View>;
     }
     return this.props.data
       .map((item, index) => {
@@ -124,8 +129,8 @@ class Deck extends Component {
                 ),
                 styles.deckStyle,
                 {
-                  ...zIndexWorkaround(100)
-                }
+                  ...zIndexWorkaround(100),
+                },
               ]}
               {...this.state.panResponder.panHandlers}
             >
@@ -138,7 +143,7 @@ class Deck extends Component {
             key={item.id}
             style={[
               styles.deckStyle,
-              { top: 10 * (index - this.state.currentIndex) }
+              { top: 20 * (index - this.state.currentIndex) },
             ]}
           >
             {this.props.renderCard(item)}
@@ -159,16 +164,16 @@ class Deck extends Component {
   }
 }
 
-zIndexWorkaround = val => {
+zIndexWorkaround = (val) => {
   return Platform.select({
     ios: { zIndex: val },
-    android: { elevation: val }
+    android: { elevation: val },
   });
 };
 const styles = StyleSheet.create({
   deckStyle: {
     position: "absolute",
-    width: SCREEN_WIDTH
-  }
+    width: SCREEN_WIDTH,
+  },
 });
 export default Deck;
