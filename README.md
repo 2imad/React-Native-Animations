@@ -20,3 +20,5 @@ npm install
 ### `npm start`
 
 Starts Expo dev server
+
+![](swipe.gif)
