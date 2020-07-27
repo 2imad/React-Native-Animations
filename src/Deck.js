@@ -9,7 +9,9 @@ import {
   UIManager,
   Platform,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
+import { styles } from "../src/styles/main";
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 const SWIPE_TRESHOLD = 0.25 * SCREEN_WIDTH;
@@ -160,7 +162,15 @@ class Deck extends Component {
   }
 
   render() {
-    return <View style={styles.deckStyle}>{this.renderCards()}</View>;
+    return (
+      <LinearGradient
+        colors={["#457b9d", "#1d3557"]}
+        start={[0.1, 0.1]}
+        style={styles.linearGradient}
+      >
+        <View style={styles.deckStyle}>{this.renderCards()}</View>
+      </LinearGradient>
+    );
   }
 }
 
@@ -170,10 +180,5 @@ zIndexWorkaround = (val) => {
     android: { elevation: val },
   });
 };
-const styles = StyleSheet.create({
-  deckStyle: {
-    position: "absolute",
-    width: SCREEN_WIDTH,
-  },
-});
+
 export default Deck;

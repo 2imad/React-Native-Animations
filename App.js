@@ -6,7 +6,6 @@ import CustomCard from "./src/components/Card";
 import Deck from "./src/Deck";
 import { styles } from "./src/styles/main";
 import { DATA } from "./src/deckItems";
-
 const customFonts = {
   Montserrat: require("./assets/fonts/montserrat.ttf"),
 };

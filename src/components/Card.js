@@ -1,12 +1,14 @@
 import React from "react";
 import { styles } from "../styles/main";
-import { Card, Button } from "react-native-elements";
+import { Button, Card } from "react-native-elements";
 import { View, Text, Image } from "react-native";
+
 const endCard = require("../../assets/images/end.jpeg");
+
 const CustomCard = ({ item, handleReset }) => {
   if (!item) {
     return (
-      <Card wrapperStyle={styles.wrapper} containerStyle={styles.card}>
+      <Card containerStyle={styles.card}>
         <View style={styles.cardContainer}>
           <View style={styles.imageContainer}>
             <Image style={styles.image} source={endCard} />
@@ -37,7 +39,7 @@ const CustomCard = ({ item, handleReset }) => {
     );
   }
   return (
-    <Card wrapperStyle={styles.wrapper} containerStyle={styles.card}>
+    <Card containerStyle={styles.card}>
       <View style={styles.cardContainer}>
         <View style={styles.imageContainer}>
           <Image style={styles.image} source={item.path} />

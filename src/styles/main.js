@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Platform } from "react-native";
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
@@ -6,7 +6,7 @@ const COLORS = {
   HEADING_FONT_SIZE: 25,
   DESCRIPTION_FONT_SIZE: 17,
   FONT: "#1d1b50",
-  BACKGROUND: "#294c60",
+  BACKGROUND: "#FFF",
 };
 
 const applyBorder = (color, width) => {
@@ -30,64 +30,70 @@ const shadow = {
 export const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.BACKGROUND,
+    alignContent: "center",
     flex: 1,
   },
-  wrapper: {
+  deckContainer: {
+    ...applyBorder("yellow", 4),
     flex: 1,
+    maxHeight: SCREEN_HEIGHT,
+    flexDirection: "column",
+    justifyContent: "flex-start",
   },
-  bgImage: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
-    alignSelf: "flex-start",
+  deckStyle: {
+    position: "absolute",
+    width: SCREEN_WIDTH,
+  },
+  linearGradient: {
+    width: "100%",
+    height: "100%",
+    opacity: 0.95,
   },
   card: {
     ...shadow,
     flex: 1,
-    minHeight: SCREEN_HEIGHT - 50,
+
     borderRadius: 10,
-    maxWidth: SCREEN_WIDTH,
+    minHeight: 500,
+    maxWidth: SCREEN_WIDTH - 30,
   },
   cardContainer: {
+    flexDirection: "column",
     flex: 1,
+    minHeight: 500,
   },
   imageContainer: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
   image: {
-    height: 200,
-    width: 200,
+    height: 120,
+    width: 120,
     resizeMode: "center",
   },
   contentView: {
-    flex: 2,
-    marginVertical: "auto",
-  },
-  content: {
-    paddingTop: 7,
-    paddingHorizontal: 7,
-    paddingBottom: 20,
-    marginBottom: 17,
-    marginTop: 10,
     flex: 1,
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
+
   heading: {
+    marginBottom: 15,
     fontFamily: "Montserrat",
     textAlign: "center",
     fontSize: COLORS.HEADING_FONT_SIZE,
     color: COLORS.FONT,
     fontWeight: "900",
-    marginBottom: 15,
   },
   subHeading: {
     textAlign: "justify",
     fontFamily: "Montserrat",
-    flexShrink: 1,
     color: "#979dac",
-    lineHeight: 24,
     fontSize: COLORS.DESCRIPTION_FONT_SIZE,
   },
-  bottomButton: {},
+  bottomButton: {
+    marginVertical: "auto",
+  },
 });
