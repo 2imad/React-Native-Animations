@@ -23,8 +23,14 @@ npm install
 
 Starts Expo dev server
 
+### `Live project`
+
+<div >
+  <img  src="live.png" width="50%" height="50%" />
+<div>
+
 ### `Demo`
 
 <div align="center">
-  <img src="swipe.gif" width="200" height="400" />
+  <img src="swipe.gif" width="200" height="400"/>
 <div>
